@@ -114,8 +114,12 @@ String FilesystemManager::readFile(const String &path) const {
   }
 
   String out;
+  out.reserve(f.size());
+  char buf[256];
   while (f.available()) {
-    out += static_cast<char>(f.read());
+    size_t n = f.readBytes(buf, sizeof(buf));
+    if (n == 0) break;
+    out.concat(buf, n);
   }
   f.close();
   return out;

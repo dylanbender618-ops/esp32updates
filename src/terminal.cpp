@@ -8,6 +8,10 @@
 #include "settings.h"
 #include "wifi.h"
 
+namespace {
+constexpr uint8_t kBuiltinLedPin = 2;
+}
+
 void TerminalManager::begin() {
   history_.clear();
   currentDir_ = "/";
@@ -185,12 +189,12 @@ TerminalResponse TerminalManager::execute(const String &commandLine, const Strin
   } else if (cmd == "led") {
     String lowerArgs = args;
     lowerArgs.toLowerCase();
-    pinMode(2, OUTPUT);
+    pinMode(kBuiltinLedPin, OUTPUT);
     if (lowerArgs == "on") {
-      digitalWrite(2, HIGH);
+      digitalWrite(kBuiltinLedPin, HIGH);
       res.output = "LED ON";
     } else if (lowerArgs == "off") {
-      digitalWrite(2, LOW);
+      digitalWrite(kBuiltinLedPin, LOW);
       res.output = "LED OFF";
     } else {
       res.output = "Try: led on | led off";

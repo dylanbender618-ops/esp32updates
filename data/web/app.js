@@ -324,7 +324,10 @@ function bindEvents() {
     toast('Rebooting...');
   });
   $('factoryResetBtn').addEventListener('click', async () => {
-    await api('/api/settings', { method: 'POST', body: JSON.stringify({ factoryReset: true }) });
+    const confirmCode = prompt('Type RESET to confirm factory reset:');
+    if (confirmCode !== 'RESET') return;
+    const password = prompt('Enter current password to continue:') || '';
+    await api('/api/settings', { method: 'POST', body: JSON.stringify({ factoryReset: true, confirm: confirmCode, password }) });
     toast('Factory reset complete. Reboot recommended.');
     await loadSettings();
   });

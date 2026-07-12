@@ -64,7 +64,7 @@ bool ApiServer::validateSession(const String &token) const {
   if (token.isEmpty()) return false;
   auto it = sessionsExpiry_.find(token);
   if (it == sessionsExpiry_.end()) return false;
-  if (millis() > it->second) {
+  if (static_cast<int32_t>(millis() - it->second) >= 0) {
     sessionsExpiry_.erase(token);
     sessionsUser_.erase(token);
     return false;
@@ -229,7 +229,10 @@ void ApiServer::setupRoutes() {
     String sid = makeSession(username);
     oledManager().setCurrentUser(username);
     AsyncWebServerResponse *res = request->beginResponse(200, "application/json", "{\"ok\":true}");
-    res->addHeader("Set-Cookie", "TPSID=" + sid + "; Path=/; HttpOnly; SameSite=Lax");
+    bool secureCookie = request->hasHeader("X-Forwarded-Proto") && request->header("X-Forwarded-Proto") == "https";
+    String cookie = "TPSID=" + sid + "; Path=/; HttpOnly; SameSite=Strict";
+    if (secureCookie) cookie += "; Secure";
+    res->addHeader("Set-Cookie", cookie);
     request->send(res);
   });
   server.addHandler(loginHandler);
@@ -430,8 +433,14 @@ void ApiServer::setupRoutes() {
     TinyPiSettings &cfg = settingsManager().data();
     JsonObject obj = json.as<JsonObject>();
     if (obj["factoryReset"].as<bool>()) {
+      String confirm = obj["confirm"] | "";
+      String password = obj["password"] | "";
+      if (confirm != "RESET" || !settingsManager().verifyPassword(password)) {
+        sendJson(request, 403, "{\"ok\":false,\"error\":\"confirmation required\"}");
+        return;
+      }
       settingsManager().resetToFactory();
-      sendJson(request, 200, "{"ok":true}");
+      sendJson(request, 200, "{\"ok\":true}");
       return;
     }
     if (obj.containsKey("hostname")) cfg.hostname = obj["hostname"].as<String>();
