@@ -5,7 +5,7 @@
 #include "oled.h"
 #include "settings.h"
 #include "terminal.h"
-#include "wifi.h"
+#include "wifi_manager.h"
 
 void setup() {
   Serial.begin(115200);

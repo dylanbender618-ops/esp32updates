@@ -5,7 +5,7 @@
 #include <WiFi.h>
 #include <Wire.h>
 
-#include "wifi.h"
+#include "wifi_manager.h"
 
 namespace {
 constexpr int kScreenWidth = 128;
