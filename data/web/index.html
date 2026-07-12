@@ -101,10 +101,14 @@
             <label>Terminal Background <input id="setTerminalBg" type="color" value="#0d1117" /></label>
             <label>OLED Brightness <input id="setBrightness" type="range" min="0" max="255" /></label>
             <label>New Password <input id="setPassword" type="password" /></label>
+            <label>Boot Logo <select id="setBootLogo"><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+            <label>Wi-Fi SSID <input id="setWifiSsid" /></label>
+            <label>Wi-Fi Password <input id="setWifiPassword" type="password" /></label>
           </div>
           <div class="actions-row">
             <button id="saveSettings">Save Settings</button>
             <button id="scanWifiBtn">Scan Wi-Fi</button>
+            <button id="saveWifiBtn">Save Wi-Fi</button>
             <button id="rebootBtn">Reboot</button>
             <button id="factoryResetBtn" class="danger">Factory Reset</button>
           </div>

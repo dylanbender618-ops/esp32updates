@@ -180,7 +180,11 @@ async function loadSettings() {
   $('setTerminalFg').value = s.terminalFg || '#d9fdd3';
   $('setTerminalBg').value = s.terminalBg || '#0d1117';
   $('setBrightness').value = s.oledBrightness ?? 255;
+  $('setBootLogo').value = String(Boolean(s.bootLogoEnabled));
+  $('setWifiSsid').value = s.wifiSsid || '';
+  $('setWifiPassword').value = '';
 }
+
 
 async function saveSettings() {
   const payload = {
@@ -190,11 +194,21 @@ async function saveSettings() {
     terminalFg: $('setTerminalFg').value,
     terminalBg: $('setTerminalBg').value,
     oledBrightness: Number($('setBrightness').value),
+    bootLogoEnabled: $('setBootLogo').value === 'true',
   };
   if ($('setPassword').value.trim()) payload.password = $('setPassword').value.trim();
   const res = await api('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
   toast(res.ok ? 'Settings saved' : 'Settings failed', res.ok ? 'ok' : 'err');
   if (res.ok) $('setPassword').value = '';
+}
+
+
+async function saveWifiCredentials() {
+  const ssid = $('setWifiSsid').value.trim();
+  const password = $('setWifiPassword').value;
+  if (!ssid) throw new Error('SSID required');
+  const res = await api('/api/wifi', { method: 'POST', body: JSON.stringify({ ssid, password }) });
+  toast(res.ok ? 'Wi-Fi credentials saved' : 'Wi-Fi save failed', res.ok ? 'ok' : 'err');
 }
 
 async function scanWifi() {
@@ -304,13 +318,15 @@ function bindEvents() {
 
   $('saveSettings').addEventListener('click', () => saveSettings().catch((e) => toast(e.message, 'err')));
   $('scanWifiBtn').addEventListener('click', () => scanWifi().catch((e) => toast(e.message, 'err')));
+  $('saveWifiBtn').addEventListener('click', () => saveWifiCredentials().catch((e) => toast(e.message, 'err')));
   $('rebootBtn').addEventListener('click', async () => {
     await api('/api/reboot', { method: 'POST' });
     toast('Rebooting...');
   });
   $('factoryResetBtn').addEventListener('click', async () => {
-    await api('/api/settings', { method: 'POST', body: JSON.stringify({ password: 'tinypios', hostname: 'tinypios' }) });
-    toast('Factory defaults partially restored');
+    await api('/api/settings', { method: 'POST', body: JSON.stringify({ factoryReset: true }) });
+    toast('Factory reset complete. Reboot recommended.');
+    await loadSettings();
   });
 
   $('otaUpload').addEventListener('click', async () => {

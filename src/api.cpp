@@ -326,7 +326,7 @@ void ApiServer::setupRoutes() {
         if (request->hasParam("path", true)) {
           target = filesystemManager().normalizePath(request->getParam("path", true)->value() + "/" + filename);
         }
-        if (!filesystemManager().isValidPath(target) || index > kUploadLimit) return;
+        if (!filesystemManager().isValidPath(target) || (index + len) > kUploadLimit) return;
 
         if (index == 0) {
           request->_tempFile = LittleFS.open(target, "w");
@@ -414,6 +414,7 @@ void ApiServer::setupRoutes() {
     doc["terminalBg"] = cfg.terminalBg;
     doc["bootLogoEnabled"] = cfg.bootLogoEnabled;
     doc["oledBrightness"] = cfg.oledBrightness;
+    doc["wifiSsid"] = cfg.wifiSsid;
 
     String out;
     serializeJson(doc, out);
@@ -428,6 +429,11 @@ void ApiServer::setupRoutes() {
 
     TinyPiSettings &cfg = settingsManager().data();
     JsonObject obj = json.as<JsonObject>();
+    if (obj["factoryReset"].as<bool>()) {
+      settingsManager().resetToFactory();
+      sendJson(request, 200, "{"ok":true}");
+      return;
+    }
     if (obj.containsKey("hostname")) cfg.hostname = obj["hostname"].as<String>();
     if (obj.containsKey("theme")) cfg.theme = obj["theme"].as<String>();
     if (obj.containsKey("autoBootPage")) cfg.autoBootPage = obj["autoBootPage"].as<String>();
