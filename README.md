@@ -29,7 +29,7 @@ TinyPiOS is a complete ESP32 web desktop project with OLED runtime status, termi
 
 - `platformio.ini`
 - `src/main.cpp`
-- `src/wifi.cpp`, `include/wifi.h`
+- `src/wifi_manager.cpp`, `include/wifi_manager.h`
 - `src/terminal.cpp`, `include/terminal.h`
 - `src/filesystem.cpp`, `include/filesystem.h`
 - `src/oled.cpp`, `include/oled.h`

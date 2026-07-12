@@ -6,7 +6,7 @@
 #include "filesystem.h"
 #include "oled.h"
 #include "settings.h"
-#include "wifi.h"
+#include "wifi_manager.h"
 
 namespace {
 constexpr uint8_t kBuiltinLedPin = 2;

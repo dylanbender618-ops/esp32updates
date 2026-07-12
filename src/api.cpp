@@ -13,7 +13,7 @@
 #include "oled.h"
 #include "settings.h"
 #include "terminal.h"
-#include "wifi.h"
+#include "wifi_manager.h"
 
 namespace {
 AsyncWebServer server(80);
