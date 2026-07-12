@@ -208,8 +208,8 @@ TerminalResponse TerminalManager::execute(const String &commandLine, const Strin
   } else if (cmd == "whoami") {
     res.output = user;
   } else if (cmd == "passwd") {
-    if (args.length() < 4) {
-      res.output = "Usage: passwd <new-password>";
+    if (args.length() < 8) {
+      res.output = "Usage: passwd <new-password> (min 8 chars)";
     } else {
       settingsManager().setPassword(args);
       settingsManager().save();

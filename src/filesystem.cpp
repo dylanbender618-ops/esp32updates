@@ -115,7 +115,7 @@ String FilesystemManager::readFile(const String &path) const {
 
   String out;
   out.reserve(f.size());
-  char buf[256];
+  char buf[1024];
   while (f.available()) {
     size_t n = f.readBytes(buf, sizeof(buf));
     if (n == 0) break;

@@ -20,6 +20,7 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 constexpr size_t kUploadLimit = 1024 * 1024;
 constexpr size_t kOtaLimit = 3 * 1024 * 1024;
+constexpr uint32_t kSessionTtlMs = 1000UL * 60UL * 60UL * 24UL;
 
 String modeString(WifiModeState mode) {
   switch (mode) {
@@ -64,7 +65,7 @@ bool ApiServer::validateSession(const String &token) const {
   if (token.isEmpty()) return false;
   auto it = sessionsExpiry_.find(token);
   if (it == sessionsExpiry_.end()) return false;
-  if (static_cast<int32_t>(millis() - it->second) >= 0) {
+  if (static_cast<uint32_t>(millis() - it->second) >= kSessionTtlMs) {
     sessionsExpiry_.erase(token);
     sessionsUser_.erase(token);
     return false;
@@ -83,7 +84,7 @@ String ApiServer::makeSession(const String &user) {
   char token[25];
   snprintf(token, sizeof(token), "%08lx%08lx", static_cast<unsigned long>(a), static_cast<unsigned long>(b));
   String sid(token);
-  sessionsExpiry_[sid] = millis() + (1000UL * 60UL * 60UL * 24UL);
+  sessionsExpiry_[sid] = millis();
   sessionsUser_[sid] = user;
   return sid;
 }
@@ -450,7 +451,7 @@ void ApiServer::setupRoutes() {
     if (obj.containsKey("terminalBg")) cfg.terminalBg = obj["terminalBg"].as<String>();
     if (obj.containsKey("bootLogoEnabled")) cfg.bootLogoEnabled = obj["bootLogoEnabled"].as<bool>();
     if (obj.containsKey("oledBrightness")) cfg.oledBrightness = obj["oledBrightness"].as<uint8_t>();
-    if (obj.containsKey("password") && obj["password"].as<String>().length() >= 4) {
+    if (obj.containsKey("password") && obj["password"].as<String>().length() >= 8) {
       settingsManager().setPassword(obj["password"].as<String>());
     }
 
