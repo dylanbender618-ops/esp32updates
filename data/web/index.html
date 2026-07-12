@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TinyPiOS</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="loginView" class="auth-view">
+      <div class="window auth-window">
+        <h1>TinyPiOS</h1>
+        <p>Sign in to your ESP32 desktop session.</p>
+        <form id="loginForm">
+          <label>Username <input id="username" value="admin" /></label>
+          <label>Password <input id="password" type="password" placeholder="tinypios" /></label>
+          <button type="submit">Login</button>
+        </form>
+        <div class="muted">Default password: <code>tinypios</code></div>
+      </div>
+    </div>
+
+    <div id="desktop" class="desktop hidden">
+      <header class="topbar">
+        <div class="logo">TinyPiOS</div>
+        <div id="clock">--:--:--</div>
+        <div class="top-actions">
+          <button id="refreshBtn">Refresh</button>
+          <button id="logoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+        <button class="nav-btn" data-page="files">Files</button>
+        <button class="nav-btn" data-page="editor">Editor</button>
+        <button class="nav-btn" data-page="terminal">Terminal</button>
+        <button class="nav-btn" data-page="settings">Settings</button>
+        <button class="nav-btn" data-page="ota">OTA</button>
+      </aside>
+
+      <main class="workspace">
+        <section id="dashboard" class="page active">
+          <h2>System Monitor</h2>
+          <div id="metrics" class="cards"></div>
+        </section>
+
+        <section id="files" class="page">
+          <h2>File Explorer</h2>
+          <div class="file-toolbar">
+            <input id="filePath" value="/" />
+            <input id="fileSearch" placeholder="Search files" />
+            <button id="reloadFiles">Reload</button>
+            <button id="newFolderBtn">New Folder</button>
+            <button id="newFileBtn">New File</button>
+            <label class="upload-btn">Upload<input id="fileUpload" type="file" multiple hidden /></label>
+          </div>
+          <div id="dropZone" class="dropzone">Drag files here to upload</div>
+          <table class="file-table">
+            <thead>
+              <tr><th>Name</th><th>Type</th><th>Size</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="fileList"></tbody>
+          </table>
+        </section>
+
+        <section id="editor" class="page">
+          <h2>Editor</h2>
+          <div class="editor-toolbar">
+            <input id="editorPath" placeholder="/home/note.txt" />
+            <button id="editorNew">New</button>
+            <button id="editorLoad">Open</button>
+            <button id="editorSave">Save</button>
+            <button id="editorSaveAs">Save As</button>
+            <button id="editorUndo">Undo</button>
+            <button id="editorRedo">Redo</button>
+          </div>
+          <div class="editor-shell">
+            <pre id="lineNumbers">1</pre>
+            <textarea id="editorArea" spellcheck="false"></textarea>
+          </div>
+        </section>
+
+        <section id="terminal" class="page">
+          <h2>Terminal</h2>
+          <div id="terminalOutput" class="terminal-output"></div>
+          <form id="terminalForm" class="terminal-input-row">
+            <span>TinyPiOS $</span>
+            <input id="terminalInput" autocomplete="off" />
+            <button>Run</button>
+          </form>
+        </section>
+
+        <section id="settings" class="page">
+          <h2>Settings</h2>
+          <div class="settings-grid">
+            <label>Hostname <input id="setHostname" /></label>
+            <label>Theme <select id="setTheme"><option value="dark">Dark</option><option value="midnight">Midnight</option></select></label>
+            <label>Auto Boot Page <input id="setBootPage" /></label>
+            <label>Terminal Foreground <input id="setTerminalFg" type="color" value="#d9fdd3" /></label>
+            <label>Terminal Background <input id="setTerminalBg" type="color" value="#0d1117" /></label>
+            <label>OLED Brightness <input id="setBrightness" type="range" min="0" max="255" /></label>
+            <label>New Password <input id="setPassword" type="password" /></label>
+          </div>
+          <div class="actions-row">
+            <button id="saveSettings">Save Settings</button>
+            <button id="scanWifiBtn">Scan Wi-Fi</button>
+            <button id="rebootBtn">Reboot</button>
+            <button id="factoryResetBtn" class="danger">Factory Reset</button>
+          </div>
+          <div id="wifiScanList" class="wifi-list"></div>
+        </section>
+
+        <section id="ota" class="page">
+          <h2>OTA Firmware Update</h2>
+          <input id="otaFile" type="file" accept=".bin" />
+          <button id="otaUpload">Upload Firmware</button>
+          <div class="progress"><div id="otaProgress"></div></div>
+          <p class="muted">Device reboots automatically on successful upload.</p>
+        </section>
+      </main>
+    </div>
+
+    <div id="toastWrap" class="toast-wrap"></div>
+
+    <script src="/terminal.js"></script>
+    <script src="/editor.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
